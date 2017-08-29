@@ -1,13 +1,16 @@
 package vending_machine;
 
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
+@RunWith(JUnit4.class)
 public class Tests {
 
 	private VendingMachine vendingMachine;
@@ -18,34 +21,45 @@ public class Tests {
 	}
 	
 	@Test
-	public void acceptValidMoney(){
-		for(Money moneyType : Money.values()){
-			
-		}
-	}
-	
-	@Test
 	public void initialDisplay(){
 		Assert.assertEquals("INSERT COIN", vendingMachine.checkDisplay());
 	}
 	
 	@Test
-	public void insertChange(){
-		double currentChange = 0, expectedChange;
-		String expectedDisplay;
-		for(Money money : Money.values()){
-			expectedChange = currentChange;
-			if(VendingMachine.isAccepted(money))
-				expectedChange += money.getAmount();
-			expectedDisplay = String.format("$%.2f", expectedChange);	
-			
-			Assert.assertEquals(expectedChange, vendingMachine.getChangeAmount());
-			Assert.assertEquals(expectedDisplay, vendingMachine.checkDisplay());
+	public void rejectsInReturn(){
+		for(Money moneyType: Money.values()){
+			if(VendingMachine.isAccepted(moneyType)){
+				Assert.assertTrue(vendingMachine.insertMoney(moneyType));
+				Assert.assertEquals(0, (int)vendingMachine.emptyCoinReturn().get(moneyType));
+			}
+			else{
+				Assert.assertFalse(vendingMachine.insertMoney(moneyType));
+				Assert.assertEquals(1, (int)vendingMachine.emptyCoinReturn().get(moneyType));
+			}
 		}
 	}
 	
 	@Test
-	public void rejectsInReturn(){
+	public void insertCoinsProperValue(){
+		double initChange = vendingMachine.getChangeValue(), delta = 0;
+		for(Money moneyType : Money.values()){
+			vendingMachine.insertMoney(moneyType);
+			if(VendingMachine.isAccepted(moneyType))
+				delta += moneyType.getValue();
+		}
+		Assert.assertEquals(initChange + delta, vendingMachine.getChangeValue(), 0.009);
+		
+	}
+	
+	@Test
+	public void insertCoinsProperDisplay(){
+		double initChange = vendingMachine.getChangeValue(), delta = 0;
+		for(Money moneyType : Money.values()){
+			vendingMachine.insertMoney(moneyType);
+			if(VendingMachine.isAccepted(moneyType))
+				delta += moneyType.getValue();
+		}
+		Assert.assertEquals(String.format("$%.2f", initChange + delta), vendingMachine.checkDisplay());
 		
 	}
 	

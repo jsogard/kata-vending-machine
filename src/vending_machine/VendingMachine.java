@@ -2,6 +2,7 @@ package vending_machine;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Map;
 
 public class VendingMachine {
 
@@ -13,7 +14,10 @@ public class VendingMachine {
 	private Till change;
 	
 	public VendingMachine(){
-		
+		display = "INSERT COIN";
+		till = new Till();
+		coinReturn = new Till();
+		change = new Till();
 	}
 
 	public boolean insertMoney(Money money) {
@@ -26,22 +30,19 @@ public class VendingMachine {
 		return true;
 	}
 
-	public double getChange() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public String checkDisplay() {
-		// TODO Auto-generated method stub
-		return null;
+		return display;
 	}
 
 	public static boolean isAccepted(Money money) {
 		return !Arrays.asList(UNACCEPTABLE).contains(money);
 	}
 
-	public double getChangeAmount() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getChangeValue() {
+		return change.getTotal();
+	}
+
+	public Map<Money, Integer> emptyCoinReturn() {
+		return coinReturn.empty();
 	}
 }
